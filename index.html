@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loops</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F7F6F2;--ink:#17191C;--ink2:#5B6068;--ink3:#9A9FA6;--line:#DCDAD3;--teal:#0F6E56;--tealbg:#E1F5EE;--red:#A32D2D;--redbg:#FCEBEB;--r:8px}
+  @media(prefers-color-scheme:dark){:root{--paper:#141517;--ink:#EDEDEA;--ink2:#A9ADB3;--ink3:#6C7178;--line:#2C2F33;--teal:#5DCAA5;--tealbg:#0B3A2E;--red:#F09595;--redbg:#3E1717}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Archivo,system-ui,sans-serif;font-size:15px;line-height:1.45}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .big{font-size:96px;font-weight:600;line-height:.9;letter-spacing:-.04em;font-variation-settings:"wdth" 80}
+  .big small{display:block;font-size:15px;font-weight:400;letter-spacing:0;color:var(--ink2);margin-top:8px;font-variation-settings:"wdth" 100}
+  .pills{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{font-size:13px;padding:5px 11px;border-radius:999px;background:var(--line);color:var(--ink2)}
+  .pill.red{background:var(--redbg);color:var(--red)}.pill.teal{background:var(--tealbg);color:var(--teal)}
+  .inbox{margin:26px 0 20px;border:1px solid var(--line);border-radius:12px;background:transparent;padding:10px}
+  .inbox.drag{border-color:var(--teal);background:var(--tealbg)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  textarea{flex:1;min-width:240px;border:0;background:transparent;color:var(--ink);font:inherit;resize:vertical;min-height:38px;padding:8px;outline:none}
+  textarea::placeholder{color:var(--ink3)}
+  button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);border-radius:var(--r);background:transparent;color:var(--ink);cursor:pointer}
+  button:hover{border-color:var(--ink3)} button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  #micBtn.on{background:var(--redbg);color:var(--red);border-color:var(--red)}
+  button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .who{display:flex;gap:4px}
+  .who button{border-radius:999px;padding:5px 10px;color:var(--ink2)}
+  .who button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .hint{font-size:12px;color:var(--ink3);padding:4px 8px 0}
+  .lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .lane{border-top:2px solid var(--ink);padding-top:10px}
+  .lane h2 .lanename{font:inherit;font-size:17px;font-weight:600;border:0;padding:2px 6px;margin-left:-6px;border-radius:6px} .lane h2 .lanename.on{background:var(--ink);color:var(--paper)}
+  .lane h2{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 6px;font-size:17px;font-weight:600}
+  .lane h2 .n{font-size:28px;font-weight:600;letter-spacing:-.03em;font-variation-settings:"wdth" 80}
+  .lane .tools{display:flex;gap:6px;margin-bottom:8px}
+  .lane .tools button{font-size:12px;padding:4px 9px}
+  .loop{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+  .loop:first-of-type{border-top:0}
+  .chk{width:18px;height:18px;flex:none;margin-top:2px;border:1.5px solid var(--ink3);border-radius:50%;background:transparent;padding:0;cursor:pointer}
+  .chk:hover{border-color:var(--ink)}
+  .t{flex:1;min-width:0}
+  .t .title{outline:none;word-wrap:break-word}
+  .t .title:focus{background:var(--line);border-radius:4px;padding:0 3px}
+  .meta{font-size:12px;color:var(--ink3);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+  .meta .stale{color:var(--red)} .meta .val{color:var(--ink);font-weight:600} .meta .pin{color:var(--ink)} .meta .found{color:var(--teal)}
+  .meta button{border:0;padding:0;font-size:12px;color:var(--ink3);background:none}
+  .meta button:hover{color:var(--ink);border:0}
+  .empty{font-size:13px;color:var(--ink3);padding:10px 0}
+  .tray{margin-top:26px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px}
+  .tray b{font-weight:600}
+  .tray .loop{border:0;padding:6px 0}
+  .tray .assign button{font-size:12px;padding:3px 8px;border-radius:999px}
+  .foot{margin-top:30px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .foot span{font-size:12px;color:var(--ink3);margin-left:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;display:flex;align-items:center}
+  .toast.show{pointer-events:auto}
+  .toast.show{opacity:1}
+  @media(prefers-reduced-motion:reduce){.toast{transition:none}}
+  input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="big"><span id="openN">0</span><small>open loops</small></div>
+    <div class="pills" id="pills"></div>
+  </header>
+
+  <div class="inbox" id="inbox">
+    <div class="row">
+      <textarea id="txt" placeholder="Say or type anything: a new loop, 'done sam package', 'pin the landlord one', 'lease is worth 400'"></textarea>
+      <div class="who" id="who"></div>
+      <button id="micBtn" aria-label="Speak">Mic</button>
+      <button id="addBtn" class="primary">Do it</button>
+      <button id="extractBtn">Extract with Claude</button>
+      <label><button type="button" onclick="this.parentNode.querySelector('input').click()">Screenshot</button><input type="file" id="file" accept="image/*"></label>
+    </div>
+    <div class="hint">New items go to the highlighted name (tap a name to change). One thing per line. Words that work: done, drop, move to, pin, unpin, worth / $. Paste a screenshot with Ctrl+V.</div>
+  </div>
+
+  <div class="lanes" id="lanes"></div>
+
+  <div class="tray" id="tray" hidden></div>
+
+  <div class="foot">
+    <button id="showDone">Show closed</button>
+    <button id="exportBtn">Copy data</button>
+    <button id="importBtn">Paste data</button>
+    <span id="stamp"></span>
+  </div>
+</div>
+<div class="toast" id="toast"><span id="toastMsg"></span><button id="undoBtn" hidden style="margin-left:10px;border-color:var(--paper);color:var(--paper);padding:3px 9px;font-size:12px">Undo</button></div>
+
+<script>
+const PEOPLE=["George","Jonathon","Leanne","Sam"];
+const STALE_DAYS=3;
+const KEY="loops-v1";
+let state={loops:[],inbox:[]};
+let showDone=false, owner="Jonathon";
+
+async function load(){
+  try{ if(window.storage){const r=await window.storage.get(KEY,false); if(r&&r.value) state=JSON.parse(r.value); return;} }catch(e){}
+  try{ const v=localStorage.getItem(KEY); if(v) state=JSON.parse(v);}catch(e){}
+}
+async function save(){
+  const v=JSON.stringify(state,(k,x)=>k==="_pick"?undefined:x);
+  try{ if(window.storage){await window.storage.set(KEY,v,false); return;} }catch(e){}
+  try{ localStorage.setItem(KEY,v);}catch(e){}
+}
+const uid=()=>Math.random().toString(36).slice(2,9);
+const now=()=>Date.now();
+const days=t=>Math.floor((now()-t)/864e5);
+const fmt=t=>new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+
+function parseLine(line,fallback){
+  line=line.trim(); if(!line) return null;
+  let who=fallback, m=line.match(/^@?(\w+)\s*[:\-–]\s*(.+)$/);
+  if(m){const p=PEOPLE.find(x=>x.toLowerCase()===m[1].toLowerCase()); if(p){who=p; line=m[2];}}
+  let due=null, d=line.match(/\b(?:due|by)\s+([A-Za-z]{3,9}\.?\s*\d{1,2}|\d{1,2}\/\d{1,2}|mon|tue|wed|thu|fri|sat|sun|tomorrow|today)\b/i);
+  if(d){due=d[1];}
+  let value=null, v=line.match(/(?:\$\s*(\d[\d,]*)|(\d[\d,]*)\s*(?:dollars|bucks))/i);
+  if(v){value=parseInt((v[1]||v[2]).replace(/,/g,""),10);}
+  const pin=/\bpin\b/i.test(line);
+  return {id:uid(),owner:who,title:line,due,value,pin,closes:"",src:"typed",created:now(),touched:now(),done:null};
+}
+function addFromText(text,src){
+  const items=text.split(/\n+/).map(l=>parseLine(l,owner)).filter(Boolean);
+  items.forEach(i=>{i.src=src||"typed"; state.loops.push(i);});
+  return items.length;
+}
+
+function rank(a,b){
+  if(!!a.done!==!!b.done) return a.done?1:-1;
+  if(!!a.pin!==!!b.pin) return a.pin?-1:1;
+  if((a.value||0)!==(b.value||0)) return (b.value||0)-(a.value||0);
+  const da=a.due?dueMs(a.due):Infinity, db=b.due?dueMs(b.due):Infinity;
+  if(da!==db) return da-db;
+  return a.touched-b.touched;
+}
+function dueMs(d){const t=Date.parse(d+" "+new Date().getFullYear()); return isNaN(t)?Infinity:t;}
+function render(){
+  const open=state.loops.filter(l=>!l.done);
+  document.getElementById("openN").textContent=open.length;
+  const stale=open.filter(l=>days(l.touched)>=STALE_DAYS).length;
+  const today=state.loops.filter(l=>l.done&&days(l.done)===0).length;
+  const found=open.filter(l=>l.src==="email").length;
+  document.getElementById("pills").innerHTML=
+    (stale?`<span class="pill red">${stale} stale</span>`:"")+
+    (today?`<span class="pill teal">${today} closed today</span>`:"")+
+    (found?`<span class="pill">${found} from email</span>`:"");
+
+  document.getElementById("who").innerHTML=PEOPLE.map(p=>`<button class="${p===owner?"on":""}" data-p="${p}">${p}</button>`).join("");
+
+  document.getElementById("lanes").innerHTML=PEOPLE.map(p=>{
+    const mine=state.loops.filter(l=>l.owner===p&&(showDone||!l.done)).sort(rank);
+    const n=mine.filter(l=>!l.done).length;
+    return `<section class="lane" data-p="${p}">
+      <h2><button class="lanename ${p===owner?"on":""}" data-p="${p}" title="New items go to ${p}">${p}</button><span class="n">${n}</span></h2>
+      <div class="tools"><button data-send="${p}">Send list</button></div>
+      ${mine.length?mine.map(row).join(""):`<div class="empty">Nothing open.</div>`}
+    </section>`;
+  }).join("");
+
+  const tray=document.getElementById("tray");
+  if(state.inbox.length){
+    tray.hidden=false;
+    tray.innerHTML=`<b>Needs a human</b> — ${state.inbox.length} item${state.inbox.length>1?"s":""}. Tap a name to file it, or Drop.`+
+      state.inbox.map(i=>`<div class="loop" data-i="${i.id}"><div class="t"><div>${esc(i.title)}</div>
+        <div class="assign meta">${PEOPLE.map(p=>`<button data-assign="${p}">${p}</button>`).join("")}<button data-drop="1">Drop</button></div></div></div>`).join("");
+  } else tray.hidden=true;
+
+  document.getElementById("stamp").textContent=`${state.loops.length} loops total`;
+  document.getElementById("showDone").textContent=showDone?"Hide closed":"Show closed";
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function row(l){
+  const st=!l.done&&days(l.touched)>=STALE_DAYS;
+  const meta=[];
+  if(l.done) meta.push(`<span>closed ${fmt(l.done)}</span>`);
+  else if(st) meta.push(`<span class="stale">stale ${days(l.touched)}d</span>`);
+  else if(l.due) meta.push(`<span>due ${esc(l.due)}</span>`);
+  else meta.push(`<span>added ${fmt(l.created)}</span>`);
+  if(l.value) meta.unshift(`<span class="val">$${l.value.toLocaleString()}</span>`);
+  if(l.pin) meta.unshift(`<span class="pin">pinned</span>`);
+  if(l.src==="email") meta.push(`<span class="found">found in email</span>`);
+  if(l.src==="screenshot") meta.push(`<span>from screenshot</span>`);
+  if(l.closes) meta.push(`<span>closes when: ${esc(l.closes)}</span>`);
+  if(!l.done) meta.push(`<button data-pin="${l.id}">${l.pin?"Unpin":"Pin to top"}</button>`,`<button data-val="${l.id}">$</button>`,`<button data-move="${l.id}">Move</button>`);
+  meta.push(`<button data-del="${l.id}">Delete</button>`);
+  return `<div class="loop" data-id="${l.id}" style="${l.done?"opacity:.5":""}">
+    <button class="chk" data-chk="${l.id}" aria-label="${l.done?"Reopen":"Close loop"}" style="${l.done?"background:var(--ink);border-color:var(--ink)":""}"></button>
+    <div class="t"><div class="title" contenteditable="true" spellcheck="false" data-edit="${l.id}">${esc(l.title)}</div><div class="meta">${meta.join("")}</div>
+    ${l._pick==="move"?`<div class="meta" style="margin-top:6px">Move to: ${PEOPLE.filter(p=>p!==l.owner).map(p=>`<button data-moveto="${p}" data-lid="${l.id}" style="border:1px solid var(--line);padding:2px 8px;border-radius:999px">${p}</button>`).join("")}</div>`:""}
+    ${l._pick==="val"?`<div class="meta" style="margin-top:6px">Worth $ <input type="number" data-valin="${l.id}" value="${l.value||""}" style="width:80px;font:inherit;font-size:12px;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--ink)" autofocus></div>`:""}
+    </div></div>`;
+}
+
+let undoSnap=null, toastTimer=null;
+function toast(m,undo){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=m;
+  document.getElementById("undoBtn").hidden=!undo; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),undo?6000:1800);}
+function snap(){undoSnap=JSON.stringify(state);}
+document.getElementById("undoBtn").addEventListener("click",async()=>{ if(!undoSnap) return; state=JSON.parse(undoSnap); undoSnap=null; await save(); render(); toast("Undone"); });
+function copy(s){return navigator.clipboard.writeText(s).then(()=>toast("Copied")).catch(()=>{prompt("Copy this:",s);});}
+
+function sendList(p){
+  const mine=state.loops.filter(l=>l.owner===p&&!l.done);
+  const lines=mine.sort(rank).map(l=>`- ${l.pin?"[top] ":""}${l.title}${l.value?" ($"+l.value+")":""}${l.due?" (due "+l.due+")":""}${days(l.touched)>=STALE_DAYS?" — been waiting "+days(l.touched)+" days":""}`);
+  const msg=`${p}, here's what's open on your side (${mine.length}):\n\n${lines.join("\n")||"- nothing right now"}\n\nWhen one is done, just reply "done: <the item>". New ones: reply "new: <what it is>". I'll update the board.`;
+  copy(msg);
+}
+
+async function askClaude(parts){
+  const sys=`You extract open loops for four people: ${PEOPLE.join(", ")}. A loop is anything someone still has to do, claim, use, reply to, or follow up on. That includes chores, replies owed, deliveries, and also money things: bonuses to claim, free spins to use, cashback, offers, deadlines, anything with a dollar value or expiry. Return ONLY JSON, no prose, no fences, shaped {"loops":[...],"summary":"one plain line saying what this is"}. Each loop: {"title":short plain words,"owner":one of the four names or null if unclear,"due":short date text or null,"value":dollar number or null,"closes":short phrase for what closes it}. Skip anything already done. If there is truly nothing to act on, return an empty loops list but still give the summary.`;
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:sys,messages:[{role:"user",content:parts}]})});
+  const d=await r.json();
+  if(d.error) throw new Error(d.error.message||"api");
+  const text=(d.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n").replace(/```json|```/g,"").trim();
+  const j=JSON.parse(text.slice(Math.min(...[text.indexOf("{"),text.indexOf("[")].filter(i=>i>=0)))); return Array.isArray(j)?{loops:j,summary:""}:j;
+}
+function ingest(res,src){
+  const items=res.loops||[]; if(!items.length&&res.summary){state.inbox.push({id:uid(),title:"Nothing clear in this "+src+": "+res.summary,owner:null,src,created:now(),touched:now(),done:null}); return [0,1];}
+  let n=0,q=0;
+  items.forEach(i=>{ if(!i||!i.title) return;
+    const l={id:uid(),owner:i.owner,title:i.title,due:i.due||null,value:i.value||null,pin:false,closes:i.closes||"",src,created:now(),touched:now(),done:null};
+    if(PEOPLE.includes(i.owner)){state.loops.push(l);n++;} else {state.inbox.push(l);q++;}
+  });
+  return [n,q];
+}
+async function extractText(){
+  const t=document.getElementById("txt").value.trim(); if(!t) return toast("Nothing to extract"); if(!inClaude()){toast("Extract only works inside Claude. Use Do it.");return;}
+  toast("Reading…");
+  try{ const items=await askClaude([{type:"text",text:t}]); const [n,q]=ingest(items,"text");
+    document.getElementById("txt").value=""; await save(); render(); toast(`${n} added${q?", "+q+" in the tray":""}`);
+  }catch(e){toast("Claude couldn't read that. Add it by hand.");}
+}
+const inClaude=()=>window.self!==window.top;
+async function extractImage(file){
+  if(!file) return; if(!inClaude()){toast("Screenshots only read inside Claude. Type it here instead.");return;} toast("Reading screenshot…");
+  const b64=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.readAsDataURL(file);});
+  try{ const items=await askClaude([{type:"image",source:{type:"base64",media_type:file.type||"image/png",data:b64}},{type:"text",text:"Extract the open loops from this screenshot."}]);
+    const [n,q]=ingest(items,"screenshot"); await save(); render(); toast(`${n} added${q?", "+q+" in the tray":""}`);
+  }catch(e){console.error(e);toast("Couldn't read the screenshot: "+(e.message||"unknown").slice(0,60));}
+}
+
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  const g=k=>b.dataset[k];
+  if(g("p")){owner=g("p");render();return;}
+  if(g("send")){sendList(g("send"));return;}
+  if(g("chk")){snap(); const l=state.loops.find(x=>x.id===g("chk")); l.done=l.done?null:now(); l.touched=now(); toast(l.done?"Closed":"Reopened",true);}
+  else if(g("pin")){const l=state.loops.find(x=>x.id===g("pin")); l.pin=!l.pin;}
+  else if(g("del")){snap(); state.loops=state.loops.filter(x=>x.id!==g("del")); toast("Deleted",true);}
+  else if(g("move")){const l=state.loops.find(x=>x.id===g("move")); l._pick=l._pick==="move"?null:"move";}
+  else if(g("val")){const l=state.loops.find(x=>x.id===g("val")); l._pick=l._pick==="val"?null:"val";}
+  else if(g("moveto")){snap(); const l=state.loops.find(x=>x.id===g("lid")); l.owner=g("moveto"); l._pick=null; l.touched=now(); toast(`Moved to ${l.owner}`,true);}
+  else if(g("assign")){const id=b.closest("[data-i]").dataset.i; const i=state.inbox.find(x=>x.id===id); i.owner=g("assign"); i.title=i.title.replace(/^Nothing clear in this \w+: /,""); i.pin=!!i.pin; state.loops.push(i); state.inbox=state.inbox.filter(x=>x.id!==id);}
+  else if(g("drop")){const id=b.closest("[data-i]").dataset.i; state.inbox=state.inbox.filter(x=>x.id!==id);}
+  else if(b.id==="addBtn"){return runCommands();}
+  else if(b.id==="extractBtn"){return extractText();}
+  else if(b.id==="showDone"){showDone=!showDone;}
+  else if(b.id==="exportBtn"){return copy(JSON.stringify(state,null,2));}
+  else if(b.id==="importBtn"){const v=prompt("Paste the data JSON:"); if(!v) return; try{state=JSON.parse(v);}catch{return toast("That wasn't valid data");}}
+  else return;
+  await save(); render();
+});
+document.addEventListener("keydown",e=>{ const el=e.target; if(el.dataset&&(el.dataset.edit||el.dataset.valin)&&e.key==="Enter"){e.preventDefault();el.blur();} });
+document.addEventListener("focusout",async e=>{
+  const el=e.target; if(el.dataset&&el.dataset.valin){const l=state.loops.find(x=>x.id===el.dataset.valin); l.value=el.value?parseInt(el.value,10):null; l._pick=null; l.touched=now(); await save(); render(); return;}
+  if(!el.dataset||!el.dataset.edit) return;
+  const l=state.loops.find(x=>x.id===el.dataset.edit); const v=el.textContent.trim();
+  if(l&&v&&v!==l.title){l.title=v;l.touched=now();await save();render();}
+});
+document.getElementById("txt").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();document.getElementById("addBtn").click();} });
+document.getElementById("file").addEventListener("change",e=>extractImage(e.target.files[0]));
+document.addEventListener("paste",e=>{ const f=[...(e.clipboardData||{}).items||[]].find(i=>i.type.startsWith("image/")); if(f){e.preventDefault();extractImage(f.getAsFile());} });
+const ib=document.getElementById("inbox");
+ib.addEventListener("dragover",e=>{e.preventDefault();ib.classList.add("drag");});
+ib.addEventListener("dragleave",()=>ib.classList.remove("drag"));
+ib.addEventListener("drop",e=>{e.preventDefault();ib.classList.remove("drag");extractImage(e.dataTransfer.files[0]);});
+
+
+function open(){return state.loops.filter(l=>!l.done);}
+function findLoop(words){
+  const w=words.toLowerCase().replace(/[^a-z0-9$ ]/g," ").split(/\s+/).filter(x=>x.length>2&&!["the","one","that","this","thing","loop","task","item","for","and"].includes(x));
+  let best=null,score=0;
+  open().forEach(l=>{const t=l.title.toLowerCase(); let s=w.filter(x=>t.includes(x)).length; if(s&&w.includes(l.owner.toLowerCase())) s+=.5; if(s>score){score=s;best=l;}});
+  return score>=1?best:null;
+}
+function localCommand(line){
+  const L=line.trim(); if(!L) return null;
+  let m;
+  if(m=L.match(/^(done|did|finished|closed?|complete[d]?)\s+(.+)/i)) return {action:"close",target:m[2]};
+  if(m=L.match(/^(drop|delete|remove|kill|forget)\s+(.+)/i)) return {action:"delete",target:m[2]};
+  if(m=L.match(/^(?:move|give|assign)\s+(.+?)\s+to\s+(\w+)$/i)) return {action:"move",target:m[1],owner:m[2]};
+  if(m=L.match(/^unpin\s+(.+)/i)) return {action:"unpin",target:m[1]};
+  if(m=L.match(/^pin\s+(.+)/i)) return {action:"pin",target:m[1]};
+  if(m=L.match(/^(.+?)\s+(?:is\s+)?worth\s+\$?(\d[\d,]*)/i)) return {action:"value",target:m[1],value:parseInt(m[2].replace(/,/g,""),10)};
+  return {action:"add",text:L};
+}
+function apply(c){
+  const person=n=>PEOPLE.find(p=>p.toLowerCase()===String(n||"").toLowerCase());
+  if(c.action==="add"){ if(c.text){return addFromText(c.text)?"added":null;}
+    const l={id:uid(),owner:person(c.owner)||owner,title:c.title,due:c.due||null,value:c.value||null,pin:!!c.pin,closes:c.closes||"",src:"typed",created:now(),touched:now(),done:null};
+    state.loops.push(l); return "added"; }
+  const l=c.id?state.loops.find(x=>x.id===c.id):findLoop(c.target||"");
+  if(!l){ if(c.action==="value"||c.action==="pin"){ const t=(c.target||"").replace(/[,\s]+$/,""); const n=parseLine(t,owner); if(!n) return null; if(c.value) n.value=c.value; if(c.action==="pin") n.pin=true; state.loops.push(n); return "added"; }
+    return "?"+(c.target||""); }
+  l.touched=now();
+  if(c.action==="close") l.done=now();
+  else if(c.action==="delete") state.loops=state.loops.filter(x=>x!==l);
+  else if(c.action==="move") l.owner=person(c.owner)||l.owner;
+  else if(c.action==="pin") l.pin=true;
+  else if(c.action==="unpin") l.pin=false;
+  else if(c.action==="value") l.value=c.value;
+  else return null;
+  return c.action;
+}
+async function claudeCommands(text){
+  const list=open().map(l=>({id:l.id,owner:l.owner,title:l.title}));
+  const sys=`You turn spoken or typed household to-do commands into actions. People: ${PEOPLE.join(", ")}. Open loops: ${JSON.stringify(list)}. Return ONLY a JSON array, no prose, no fences. Each action is one of: {"action":"add","title":...,"owner":name or null,"due":text or null,"value":dollars or null,"pin":bool} | {"action":"close"|"delete"|"pin"|"unpin","id":...} | {"action":"move","id":...,"owner":name} | {"action":"value","id":...,"value":number}. Match loosely on meaning. If the text is just a new task, use add. Never invent loops that aren't in the text.`;
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,system:sys,messages:[{role:"user",content:text}]})});
+  const d=await r.json();
+  if(d.error) throw new Error(d.error.message||"api");
+  const t=(d.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n").replace(/```json|```/g,"").trim();
+  return JSON.parse(t.slice(t.indexOf("[")));
+}
+async function runCommands(){
+  const box=document.getElementById("txt"); const text=box.value.trim(); if(!text) return;
+  snap();
+  const lines=text.split(/\n+/).filter(l=>l.trim());
+  let out=[], retry=[];
+  lines.forEach(l=>{ const r=apply(localCommand(l)); if(r&&r.startsWith("?")) retry.push(l); else if(r) out.push(r); });
+  box.value=""; await save(); render();
+  if(retry.length){ toast("Asking Claude…");
+    try{ const acts=await claudeCommands(retry.join("\n")); const o2=acts.map(apply).filter(Boolean); out=out.concat(o2.filter(x=>!x.startsWith("?"))); const miss=o2.filter(x=>x.startsWith("?")); await save(); render();
+      if(miss.length){toast(`Couldn't find: ${miss.map(x=>x.slice(1)).join(", ")}`,true);return;} }
+    catch(e){ toast(`Couldn't find: ${retry.join(", ")}`,true); return; } }
+  toast(out.length?out.join(", "):"Nothing to do",out.length>0);
+}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null;
+document.getElementById("micBtn").addEventListener("click",()=>{
+  const btn=document.getElementById("micBtn");
+  if(!SR||window.self!==window.top){document.getElementById("txt").focus();toast("Tap the mic key on your keyboard, then Do it");return;}
+  if(rec){rec.stop();return;}
+  rec=new SR(); rec.lang="en-US"; rec.interimResults=false;
+  rec.onresult=e=>{const t=e.results[0][0].transcript; document.getElementById("txt").value=t;};
+  rec.onend=()=>{rec=null;btn.classList.remove("on");btn.textContent="Mic"; if(document.getElementById("txt").value.trim()) runCommands();};
+  rec.onerror=e=>{toast(e.error==="not-allowed"?"Mic blocked. Allow it in the browser.":"Didn't catch that");};
+  btn.classList.add("on"); btn.textContent="Listening"; rec.start();
+});
+
+load().then(render);
+</script>
+</body>
+</html>
