@@ -10,12 +10,12 @@ One set of rules every AI tool follows. Update it here; every tool picks it up.
 * Show an example of the output before a full build. Innovate first, then execute.
 * Visuals: punchy, key number obvious. No AI styling, no stat-tile rows, no TMI.
 * Say which model and effort to use whenever it should change.
-* After each finished phase: `PROGRESS: \[n/total] done — \[next] — rough time left.`
+* After each finished phase: `PROGRESS: [n/total] done — [next] — rough time left.`
 * Don't give me new manual tasks. Automate the capture instead.
 
 ## Every project has five files
 
-* PROJECT\_PLAN.md: what we're building, why, in what order.
+* PROJECT_PLAN.md: what we're building, why, in what order.
 * WORKING-RULES.md: how each session runs.
 * STATE.md: where we are and the very next step. Rewrite it each session. Never append.
 * CHANGELOG.md: what changed.
